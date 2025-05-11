@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pressure Map Visualization</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <h1>Pressure Map - In-bed Posture Visualization</h1>
+
+<div id="controls">
+    <label for="fileSelector">Choose Recording:</label>
+    <select id="fileSelector"></select>
+    <br><br>
+    <label for="frameSlider">Frame:</label>
+    <input type="range" id="frameSlider" min="0" max="59" value="0">
+    <span id="frameNumber">0</span>
+</div>
+
+<div id="postureLabel">Posture: Supine (Demo)</div>
+
+<div id="heatmap"></div>
+
+</body>
+</html>
