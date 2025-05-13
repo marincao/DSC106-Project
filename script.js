@@ -76,14 +76,25 @@ function drawFrame(frameIndex) {
         .attr("height", cellSize)
         .attr("fill", d => colorScale(d))
         .on("mouseover", function(event, d) {
-            console.log("Hovered pressure:", d);  // should appear in dev console
-            d3.select(this).attr("stroke", "black").attr("stroke-width", 1);
-            d3.select("#postureLabel").text(`Pressure: ${d.toFixed(1)} | Posture: Supine (Demo)`);
+            const [x, y] = d3.pointer(event);
+            const index = flatData.indexOf(d);
+            const row = index % rows;
+            const col = Math.floor(index / rows);
+            d3.select("#tooltip")
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 20) + "px")
+                .style("opacity", 1)
+                .html(`Pressure: ${d.toFixed(1)}<br>Row: ${row}, Col: ${col}`);
+        
+            d3.select(this)
+                .attr("stroke", "black")
+                .attr("stroke-width", 1);
         })
         .on("mouseout", function() {
+            d3.select("#tooltip").style("opacity", 0);
             d3.select(this).attr("stroke", null);
-            d3.select("#postureLabel").text("Posture: Supine (Demo)");
         });
+        
     
     createBrushSelector(svg);
 }
