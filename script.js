@@ -163,7 +163,7 @@ function createBrushSelector(svg) {
 
     // Show on the website
     d3.select("#brushInfo")
-        .text(`Brushed region: ${brushedCount} cells, Avg Pressure: ${avgPressure}`);
+        .text(`Cells Selected: ${brushedCount} cells, Avg Pressure: ${avgPressure}`);
 
     // console.log(`Brushed cells: ${brushedCount}, Avg Pressure: ${avgPressure}`);
 

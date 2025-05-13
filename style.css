@@ -43,11 +43,12 @@ svg {
 
 #brushInfo {
     margin-top: 10px;
+    padding: 1em;
     font-size: 1.1em;
     color: #444;
     font-style: italic;
 }
 
 #heatmap {
-    outline: none; /* Important for key events */
+    outline: none;
 }
