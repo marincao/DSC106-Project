@@ -17,11 +17,17 @@ const availableFiles = [
 let frames = [];
 let currentFile = "data_json/1.json"; // default
 
-const svg = d3.select("#heatmap")
-              .append("svg")
-              .attr("width", cols * cellSize)
-              .attr("height", rows * cellSize);
+const svgWidth = 960; // or set to a smaller value like 720
+const svgHeight = 480; // adjust as needed based on cellSize, cols, rows
 
+const svg = d3.select("#heatmap")
+    .append("svg")
+    .attr("width", svgWidth)
+    .attr("height", svgHeight)
+    .attr("viewBox", `0 0 ${cols * cellSize} ${rows * cellSize}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+
+const heatmapGroup = svg.append("g");
 // Populate file selector
 const selector = d3.select("#fileSelector");
 selector.selectAll("option")
@@ -61,7 +67,7 @@ function drawFrame(frameIndex) {
 
     const flatData = frame.flat();
 
-    const cells = svg.selectAll("rect")
+    const cells = heatmapGroup.selectAll("rect")
                      .data(flatData);
 
     cells.join("rect")
@@ -79,3 +85,13 @@ function drawFrame(frameIndex) {
             d3.select("#postureLabel").text("Posture: Supine (Demo)");
         });
 }
+
+const zoom = d3.zoom()
+    .scaleExtent([1, 8])
+    .translateExtent([[0, 0], [cols * cellSize, rows * cellSize]])
+    .extent([[0, 0], [svgWidth, svgHeight]])
+    .on("zoom", (event) => {
+        heatmapGroup.attr("transform", event.transform);
+    });
+
+svg.call(zoom);
