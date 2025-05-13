@@ -1,10 +1,12 @@
 const cellSize = 15;
 const rows = 32;
 const cols = 64;
+const svgWidth = cols * cellSize;
+const svgHeight = rows * cellSize;
 
 const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
                      .domain([0, 100]);
-// Predefined list of available JSON files
+
 const availableFiles = [
     "data_json/1.json", "data_json/2.json", "data_json/3.json",
     "data_json/4.json", "data_json/5.json", "data_json/6.json",
@@ -17,24 +19,20 @@ const availableFiles = [
 let frames = [];
 let currentFile = "data_json/1.json"; // default
 
-const svgWidth = 960; // or set to a smaller value like 720
-const svgHeight = 480; // adjust as needed based on cellSize, cols, rows
-
 const svg = d3.select("#heatmap")
     .append("svg")
     .attr("width", svgWidth)
-    .attr("height", svgHeight)
-    .attr("viewBox", `0 0 ${cols * cellSize} ${rows * cellSize}`)
-    .attr("preserveAspectRatio", "xMidYMid meet");
+    .attr("height", svgHeight);
 
-const heatmapGroup = svg.append("g");
-// Populate file selector
+const heatmapGroup = svg.append("g")
+
+
 const selector = d3.select("#fileSelector");
 selector.selectAll("option")
     .data(availableFiles)
     .enter()
     .append("option")
-    .text(d => d.split('/')[1])  // only show 1.json, 2.json
+    .text(d => d.split('/')[1])
     .attr("value", d => d);
 
 // Load initial file
@@ -68,7 +66,8 @@ function drawFrame(frameIndex) {
     const flatData = frame.flat();
 
     const cells = heatmapGroup.selectAll("rect")
-                     .data(flatData);
+                    .attr('class', 'cells')
+                    .data(flatData);
 
     cells.join("rect")
         .attr("x", (d, i) => Math.floor(i / rows) * cellSize)
@@ -77,6 +76,7 @@ function drawFrame(frameIndex) {
         .attr("height", cellSize)
         .attr("fill", d => colorScale(d))
         .on("mouseover", function(event, d) {
+            console.log("Hovered pressure:", d);  // should appear in dev console
             d3.select(this).attr("stroke", "black").attr("stroke-width", 1);
             d3.select("#postureLabel").text(`Pressure: ${d.toFixed(1)} | Posture: Supine (Demo)`);
         })
@@ -84,6 +84,8 @@ function drawFrame(frameIndex) {
             d3.select(this).attr("stroke", null);
             d3.select("#postureLabel").text("Posture: Supine (Demo)");
         });
+    
+    createBrushSelector(svg);
 }
 
 const zoom = d3.zoom()
@@ -94,4 +96,54 @@ const zoom = d3.zoom()
         heatmapGroup.attr("transform", event.transform);
     });
 
-svg.call(zoom);
+function createBrushSelector(svg) {
+  svg.call(d3.brush().on('start brush end', brushed));
+  svg.selectAll('.cells, .overlay ~ *').raise();
+  // The zoom functionality
+  svg.call(zoom);
+  
+  // Function to handle brush events
+  function brushed(event) {
+    const selection = event.selection;
+    
+    if (!selection) {
+        return;
+    }
+    
+    const [[x0, y0], [x1, y1]] = selection;
+    let brushedCount = 0;
+    let totalPressure = 0;
+
+    heatmapGroup.selectAll("rect")
+        .each(function(d) {
+            const rect = d3.select(this);
+            const x = +rect.attr("x");
+            const y = +rect.attr("y");
+
+            const isBrushed = x >= x0 && x <= x1 && y >= y0 && y <= y1;
+
+            if (isBrushed) {
+                rect
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 0.3);
+                brushedCount += 1;
+                totalPressure += +d;
+            } else {
+                rect
+                    .attr("stroke", null)
+                    .attr("stroke-width", null);
+            }
+        });
+
+    const avgPressure = brushedCount > 0 ? (totalPressure / brushedCount).toFixed(2) : 0;
+
+    // Show on the website
+    d3.select("#brushInfo")
+        .text(`Brushed region: ${brushedCount} cells, Avg Pressure: ${avgPressure}`);
+
+    // console.log(`Brushed cells: ${brushedCount}, Avg Pressure: ${avgPressure}`);
+
+    //brushGroup.call(brush.move, null);
+}
+}
+
