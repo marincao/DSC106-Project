@@ -16,6 +16,26 @@ const availableFiles = [
     "data_json/16.json", "data_json/17.json"
 ];
 
+const postureMap = {
+    "1.json": "Supine",
+    "2.json": "Right",
+    "3.json": "Left",
+    "4.json": "Right: 1 Wedge Body-roll",
+    "5.json": "Right: 2 Wedges Body-roll",
+    "6.json": "Left: 1 Wedge Body-roll",
+    "7.json": "Left: 2 Wedges Body-roll",
+    "8.json": "Supine",
+    "9.json": "Supine",
+    "10.json": "Supine",
+    "11.json": "Supine",
+    "12.json": "Supine",
+    "13.json": "Right Fetus",
+    "14.json": "Left Fetus",
+    "15.json": "Supine: 30 Bed Inclination",
+    "16.json": "Supine: 45 Bed Inclination",
+    "17.json": "Supine: 60 Bed Inclination"
+};
+
 let frames = [];
 let currentFile = "data_json/1.json"; // default
 
@@ -57,6 +77,10 @@ function loadFrames(fileName) {
         d3.select("#frameSlider").attr("max", frames.length - 1).property("value", 0);
         drawFrame(0);
         d3.select("#frameNumber").text(0);
+
+        // Extract posture name and display
+        const posture = postureMap[fileName.split("/").pop()] || "Unknown";
+        d3.select("#postureLabel").text(`Posture: ${posture}`);
     });
 }
 
@@ -78,7 +102,7 @@ function drawFrame(frameIndex) {
         .on("mouseover", function(event, d) {
             console.log("Hovered pressure:", d);  // should appear in dev console
             d3.select(this).attr("stroke", "black").attr("stroke-width", 1);
-            d3.select("#postureLabel").text(`Pressure: ${d.toFixed(1)} | Posture: Supine (Demo)`);
+            d3.select("#postureLabel").text(`Pressure: ${d.toFixed(1)} | Posture: ${currentPosture}`);
         })
         .on("mouseout", function() {
             d3.select(this).attr("stroke", null);
