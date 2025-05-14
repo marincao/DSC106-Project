@@ -45,10 +45,9 @@
     <p>For the interaction content, we included a slider to control the time frame, a dropdown to switch between recordings, and a enable/disable brushing tool to manually select a region and view average pressure (or, if brushing is disabled, it will simply be a hover effect for intereaction showing data on individual grids). This design allows readers to freely explore the dataset, choosing any number of grids they want and see the average pressure for different sleep postures. During the design process, we also thought of having two sleep graphs side-by-side for comparison, but realized it could be confusing if the two recorded postures are very different. Hence we went with our current design.</p>
   
     <h3>Development Process</h3>
-    <p>We worked as a team of 3 members, splitting tasks across data loading, project checkpoint, building and refining the intereactive visualization, styling, and writeup. One member focused on rendering the heatmap, another implemented interactivity (slider, brushing), and another polished layout and legend behavior.</p>
-    <p>Total time spent was approximately 20–25 people-hours. The most time-consuming parts were debugging brush behavior, syncing hover/brush interactions, and cleaning up layout styling for clarity and responsiveness.</p>
+    <p>We worked as a team of 3 members, splitting tasks across data loading, project checkpoint, building and refining the intereactive visualization, styling, and writeup. </p>
     <p>We collaborated via GitHub and iterated based on live feedback and testing. Our final design emphasizes usability, spatial clarity, and user control.</p>
-  
+    <p>The aspect that took us the most time was debugging brush logic and mouse hover effect: we couldn't get them to work at the same time, it was either the brush working perfectly while hover effect not showing, or hover intereaction worked with a dysfunctioned brush logic. This is one of the major reasons we decide to create a brush enabling button - we can separate out the conflicting brush and mouse hover effect with this design.</p>
 </section>
 
 </body>
