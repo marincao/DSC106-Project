@@ -5,7 +5,7 @@ const svgWidth = cols * cellSize;
 const svgHeight = rows * cellSize;
 
 const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
-                     .domain([0, 100]);
+                     .domain([0, 300]);  // Updated to reflect pressure range 0-300
 
 const availableFiles = [
     "data_json/1.json", "data_json/2.json", "data_json/3.json",
@@ -78,14 +78,12 @@ d3.select("#frameSlider").on("input", function() {
 function toggleBrush() {
     brushEnabled = !brushEnabled;
     d3.select("#brushToggle").text(brushEnabled ? "Disable Brush" : "Enable Brush");
-    
-    // Clear all brush strokes when disabling brush mode
+
     if (!brushEnabled) {
         heatmapGroup.selectAll("rect").attr("stroke", null);
         d3.select("#brushInfo").text("Cells Selected: 0 cells, Avg Pressure: 0.0");
     }
-    
-    // Redraw the current frame
+
     drawFrame(d3.select("#frameSlider").property("value"));
 }
 
@@ -96,7 +94,6 @@ function loadFrames(fileName) {
         drawFrame(0);
         d3.select("#frameNumber").text(0);
 
-        // Extract posture name and display
         const posture = postureMap[fileName.split("/").pop()] || "Unknown";
         d3.select("#postureLabel").text(`Posture: ${posture}`);
     });
@@ -106,13 +103,9 @@ function drawFrame(frameIndex) {
     const frame = frames[frameIndex];
     const flatData = frame.flat();
 
-    // Clear previous brush
     svg.selectAll(".brush").remove();
-
-    // Create tooltip
     const tooltip = d3.select("#tooltip");
 
-    // Update cells
     const cells = heatmapGroup.selectAll("rect")
         .data(flatData);
 
@@ -125,8 +118,6 @@ function drawFrame(frameIndex) {
         .on("mouseover", function(event, d) {
             if (!brushEnabled) {
                 d3.select(this).attr("stroke", "black").attr("stroke-width", 1);
-                
-                // Show tooltip near cursor
                 tooltip.classed("hidden", false)
                     .html(`Pressure: ${d.toFixed(1)}`)
                     .style("left", (event.pageX + 10) + "px")
@@ -135,7 +126,6 @@ function drawFrame(frameIndex) {
         })
         .on("mousemove", function(event, d) {
             if (!brushEnabled) {
-                // Move tooltip with cursor
                 tooltip.style("left", (event.pageX + 10) + "px")
                        .style("top", (event.pageY - 10) + "px");
             }
@@ -147,7 +137,6 @@ function drawFrame(frameIndex) {
             }
         });
 
-    // Initialize brush if enabled
     if (brushEnabled) {
         const brush = d3.brush()
             .extent([[0, 0], [svgWidth, svgHeight]])
@@ -163,13 +152,12 @@ function brushed(event) {
     if (!brushEnabled) return;
 
     const selection = event.selection;
-    
     if (!selection) {
         d3.select("#brushInfo").text("Cells Selected: 0 cells, Avg Pressure: 0.0");
         heatmapGroup.selectAll("rect").attr("stroke", null);
         return;
     }
-    
+
     const [[x0, y0], [x1, y1]] = selection;
     let brushedCount = 0;
     let totalPressure = 0;
@@ -196,55 +184,42 @@ function brushed(event) {
 }
 
 function drawFixedLegend() {
-    const legendHeight = 450;
-    const legendWidth = 35;
+    const legendWidth = 300;
+    const legendHeight = 15;
 
     const svg = d3.select("#legend")
         .append("svg")
-        .attr("width", 80)
-        .attr("height", legendHeight + 30);
+        .attr("width", legendWidth + 50)
+        .attr("height", 40);
 
     const defs = svg.append("defs");
     const gradient = defs.append("linearGradient")
-        .attr("id", "legend-gradient-vertical")
-        .attr("x1", "0%").attr("y1", "100%")
-        .attr("x2", "0%").attr("y2", "0%");
+        .attr("id", "legend-gradient")
+        .attr("x1", "0%").attr("x2", "100%");
 
     gradient.selectAll("stop")
         .data(d3.range(0, 1.01, 0.01))
         .enter().append("stop")
         .attr("offset", d => `${d * 100}%`)
-        .attr("stop-color", d => colorScale(d * 100));
+        .attr("stop-color", d => colorScale(d * 300));  // Scale updated for 0–300 range
 
     svg.append("rect")
-        .attr("x", 10)
-        .attr("y", 0)
-        .attr("width", legendWidth)
-        .attr("height", legendHeight)
-        .style("fill", "url(#legend-gradient-vertical)");
+        .attr("x", 25).attr("y", 10)
+        .attr("width", legendWidth).attr("height", legendHeight)
+        .style("fill", "url(#legend-gradient)");
 
-    const scale = d3.scaleLinear()
-        .domain([0, 100])
-        .range([legendHeight, 0]);
+    const scale = d3.scaleLinear().domain([0, 300]).range([25, 25 + legendWidth]);
 
-    const axis = d3.axisRight(scale)
-        .tickValues([0, 20, 40, 60, 80, 100])
+    const axis = d3.axisBottom(scale)
+        .tickValues([0, 60, 120, 180, 240, 300])
         .tickFormat(d => d.toFixed(0));
 
     svg.append("g")
-        .attr("transform", `translate(${10 + legendWidth}, 0)`)
+        .attr("transform", `translate(0, ${10 + legendHeight})`)
         .call(axis)
         .selectAll("text")
         .style("font-size", "10px")
-        .style("fill", "#444")
-        .attr("dx", "4px");
-
-    svg.append("text")
-        .attr("x", legendWidth)
-        .attr("y", -15)
-        .attr("text-anchor", "middle")
-        .style("font-size", "14px")
-        .style("font-weight", "bold")
-        .text("Pressure (mmHg)");
+        .style("fill", "#444");
 }
+
 drawFixedLegend();
