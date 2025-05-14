@@ -101,6 +101,9 @@ function drawFrame(frameIndex) {
     // Clear previous brush
     svg.selectAll(".brush").remove();
 
+    // Create tooltip
+    const tooltip = d3.select("#tooltip");
+
     // Update cells
     const cells = heatmapGroup.selectAll("rect")
         .data(flatData);
@@ -114,15 +117,25 @@ function drawFrame(frameIndex) {
         .on("mouseover", function(event, d) {
             if (!brushEnabled) {
                 d3.select(this).attr("stroke", "black").attr("stroke-width", 1);
-                const posture = postureMap[currentFile.split("/").pop()] || "Unknown";
-                d3.select("#postureLabel").text(`Pressure: ${d.toFixed(1)} | Posture: ${posture}`);
+                
+                // Show tooltip near cursor
+                tooltip.classed("hidden", false)
+                    .html(`Pressure: ${d.toFixed(1)}`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            }
+        })
+        .on("mousemove", function(event, d) {
+            if (!brushEnabled) {
+                // Move tooltip with cursor
+                tooltip.style("left", (event.pageX + 10) + "px")
+                       .style("top", (event.pageY - 10) + "px");
             }
         })
         .on("mouseout", function() {
             if (!brushEnabled) {
                 d3.select(this).attr("stroke", null);
-                const posture = postureMap[currentFile.split("/").pop()] || "Unknown";
-                d3.select("#postureLabel").text(`Posture: ${posture}`);
+                tooltip.classed("hidden", true);
             }
         });
 
@@ -171,7 +184,7 @@ function brushed(event) {
         });
 
     const avgPressure = brushedCount > 0 ? (totalPressure / brushedCount).toFixed(2) : 0;
-    d3.select("#brushInfo").text(`Cells Selected: ${brushedCount} cells, Avg Pressure: ${avgPressure}`);
+    d3.select("#brushInfo").text(`Cells Selected: ${brushedCount}, Avg Pressure: ${avgPressure}`);
 }
 
 function drawFixedLegend() {

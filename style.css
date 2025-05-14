@@ -22,7 +22,7 @@ h1 {
 }
 
 #postureLabel {
-    margin-top: 20px;
+    margin: 10px;
     font-size: 1.2em;
     color: #555;
 }
@@ -76,5 +76,19 @@ svg {
 #legend svg {
     margin: 20px auto;
     display: block;
-  }
-  
+}
+
+#tooltip {
+    position: absolute;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 14px;
+    z-index: 10;
+}
+
+#tooltip.hidden {
+    display: none;
+}
