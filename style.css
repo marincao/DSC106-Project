@@ -46,8 +46,8 @@ h1 {
 }
 
 #brushInfo {
-    margin-top: 10px;
-    padding: 1em;
+    margin-top: 3px;
+    padding: 0.5em;
     font-size: 1.1em;
     color: #444;
     font-style: italic;
@@ -61,7 +61,7 @@ h1 {
 
 #heatmap-container {
     position: relative;
-    margin: 0 auto;
+    margin: 50px;
     max-width: 960px;
 }
 
@@ -125,3 +125,30 @@ h1 {
     margin-bottom: 15px;
     text-align: justify;
 }
+
+#legend {
+    margin-left: 0;
+    padding-top: 20px;
+}
+
+#legend svg {
+    display: block;
+    margin: auto;
+}
+
+#heatmap-legend-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+  }
+  
+
+#legend svg {
+    display: block;
+    overflow: visible;
+  }
+
+
