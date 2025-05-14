@@ -36,6 +36,20 @@
 <div id="legend"></div>
 <div id="tooltip" class="hidden"></div>
 <br></br>
-<h2>Write Up</h2>
+<section id="writeup">
+    <h2>Project Write-Up</h2>
+  
+    <h3>Design Rationale</h3>
+    <p>Our goal was to create an intuitive visualization of sleep posture pressure across time using heatmaps. We chose a heatmap grid because it naturally supports spatially distributed numerical data like pressure, allowing viewers to quickly recognize patterns of intensity.</p>
+    <p>We applied a sequential color scale (YlOrRd) to encode pressure, where light yellow indicates low pressure and dark red represents high pressure. This color scheme was selected for its perceptual ordering and accessibility. We considered alternatives like blue-red diverging scales but opted for a single-hue scale to avoid implying polarity.</p>
+    <p>For interaction, we included a slider to control the time frame, a dropdown to switch between recordings, and a brushing tool to manually select a region and view average pressure. This supports exploratory analysis. We also refined the layout by moving the color legend to the right, minimizing scrolling.</p>
+  
+    <h3>Development Process</h3>
+    <p>We worked as a team of [insert number] members, splitting tasks across data loading, interactivity, and styling. One member focused on rendering the heatmap, another implemented interactivity (slider, brushing), and another polished layout and legend behavior.</p>
+    <p>Total time spent was approximately 20–25 people-hours. The most time-consuming parts were debugging brush behavior, syncing hover/brush interactions, and cleaning up layout styling for clarity and responsiveness.</p>
+    <p>We collaborated via GitHub and iterated based on live feedback and testing. Our final design emphasizes usability, spatial clarity, and user control.</p>
+  
+</section>
+
 </body>
 </html>
