@@ -78,6 +78,14 @@ d3.select("#frameSlider").on("input", function() {
 function toggleBrush() {
     brushEnabled = !brushEnabled;
     d3.select("#brushToggle").text(brushEnabled ? "Disable Brush" : "Enable Brush");
+    
+    // Clear all brush strokes when disabling brush mode
+    if (!brushEnabled) {
+        heatmapGroup.selectAll("rect").attr("stroke", null);
+        d3.select("#brushInfo").text("Cells Selected: 0 cells, Avg Pressure: 0.0");
+    }
+    
+    // Redraw the current frame
     drawFrame(d3.select("#frameSlider").property("value"));
 }
 
