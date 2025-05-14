@@ -56,7 +56,7 @@ selector.selectAll("option")
     .data(availableFiles)
     .enter()
     .append("option")
-    .text(d => d.split('/')[1])
+    .text(d => d.split('/')[1].replace('.json', ''))  // Removes ".json"
     .attr("value", d => d);
 
 // Load initial file

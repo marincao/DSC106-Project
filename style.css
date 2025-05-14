@@ -12,20 +12,29 @@ h1 {
     color: #333;
 }
 
-#controls {
+#top-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
     margin-bottom: 15px;
-}
-
-#frameSlider {
-    width: 300px;
-    margin: 0 10px;
-}
-
-#postureLabel {
-    margin: 10px;
+    margin-top: 30px;
     font-size: 1.2em;
     color: #555;
 }
+
+#top-controls > div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#frameSlider {
+    width: 200px;
+    margin: 0 5px;
+}
+
 
 #heatmap svg {
     border: 1px solid #ccc;
@@ -36,11 +45,6 @@ h1 {
     height: auto;
 }
 
-svg {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
 #brushInfo {
     margin-top: 10px;
     padding: 1em;
@@ -49,14 +53,16 @@ svg {
     font-style: italic;
 }
 
-#heatmap-container {
-    margin: 0 auto;
-    max-width: 960px;
-    text-align: center;
+#brush-toggle-container {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
 }
 
-#heatmap-controls {
-    margin-bottom: 10px;
+#heatmap-container {
+    position: relative;
+    margin: 0 auto;
+    max-width: 960px;
 }
 
 #brushToggle {
@@ -73,11 +79,6 @@ svg {
     background-color: #45a049;
 }
 
-#legend svg {
-    margin: 20px auto;
-    display: block;
-}
-
 #tooltip {
     position: absolute;
     padding: 8px;
@@ -92,3 +93,4 @@ svg {
 #tooltip.hidden {
     display: none;
 }
+

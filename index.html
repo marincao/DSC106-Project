@@ -9,25 +9,33 @@
 </head>
 <body>
     <h1>Pressure Map - In-bed Posture Visualization</h1>
+    <h3>Group: Marin Cao, Ruofei Mao, Fiona Zou</h2>
+<div id="top-controls">
+    <div>
+        <label for="fileSelector">Recording:</label>
+        <select id="fileSelector"></select>
+    </div>
+    
+    <div>
+        <label for="frameSlider">Frame:</label>
+        <input type="range" id="frameSlider" min="0" max="59" value="0">
+        <span id="frameNumber">0</span>
+    </div>
 
-<div id="controls">
-    <label for="fileSelector">Choose Recording:</label>
-    <select id="fileSelector"></select>
-    <br><br>
-    <label for="frameSlider">Frame:</label>
-    <input type="range" id="frameSlider" min="0" max="59" value="0">
-    <span id="frameNumber">0</span>
+    <div id="postureLabel">Posture: Supine</div>
 </div>
-<div id="postureLabel">Posture: Supine</div>
+
 
 <div id="heatmap-container">
-        <div id="heatmap-controls">
-            <button id="brushToggle">Enable Brush</button>
-        </div>
         <div id="heatmap"></div>
+    <div id="brush-toggle-container">
+        <button id="brushToggle">Enable Brush</button>
+    </div>
 </div>
 <div id="brushInfo">Cells Selected: 0, Avg Pressure: 0.0</div>
 <div id="legend"></div>
 <div id="tooltip" class="hidden"></div>
+<br></br>
+<h2>Write Up</h2>
 </body>
 </html>
