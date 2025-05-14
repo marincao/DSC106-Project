@@ -171,3 +171,42 @@ function createBrushSelector(svg) {
 }
 }
 
+function drawFixedLegend() {
+    const legendWidth = 300;
+    const legendHeight = 15;
+  
+    const svg = d3.select("#legend")
+      .append("svg")
+      .attr("width", legendWidth + 50)
+      .attr("height", 40);
+  
+    const defs = svg.append("defs");
+    const gradient = defs.append("linearGradient")
+      .attr("id", "legend-gradient")
+      .attr("x1", "0%").attr("x2", "100%");
+  
+    gradient.selectAll("stop")
+      .data(d3.range(0, 1.01, 0.01))
+      .enter().append("stop")
+      .attr("offset", d => `${d * 100}%`)
+      .attr("stop-color", d => colorScale(d * 100));
+  
+    svg.append("rect")
+      .attr("x", 25).attr("y", 10)
+      .attr("width", legendWidth).attr("height", legendHeight)
+      .style("fill", "url(#legend-gradient)");
+  
+    const scale = d3.scaleLinear().domain([0, 100]).range([25, 25 + legendWidth]);
+  
+    const axis = d3.axisBottom(scale)
+        .tickValues([0, 20, 40, 60, 80, 100])
+        .tickFormat(d => d.toFixed(0));
+
+    svg.append("g")
+      .attr("transform", `translate(0, ${10 + legendHeight})`)
+      .call(axis)
+      .selectAll("text")
+      .style("font-size", "10px")
+      .style("fill", "#444");
+  }
+drawFixedLegend();

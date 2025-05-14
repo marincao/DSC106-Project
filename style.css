@@ -52,3 +52,9 @@ svg {
 #heatmap {
     outline: none;
 }
+
+#legend svg {
+    margin: 20px auto;
+    display: block;
+  }
+  
