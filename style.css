@@ -22,7 +22,7 @@ h1 {
 }
 
 #postureLabel {
-    margin-bottom: 20px;
+    margin-top: 20px;
     font-size: 1.2em;
     color: #555;
 }
@@ -49,8 +49,28 @@ svg {
     font-style: italic;
 }
 
-#heatmap {
-    outline: none;
+#heatmap-container {
+    margin: 0 auto;
+    max-width: 960px;
+    text-align: center;
+}
+
+#heatmap-controls {
+    margin-bottom: 10px;
+}
+
+#brushToggle {
+    padding: 5px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#brushToggle:hover {
+    background-color: #45a049;
 }
 
 #legend svg {

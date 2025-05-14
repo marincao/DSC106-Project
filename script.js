@@ -38,15 +38,19 @@ const postureMap = {
 
 let frames = [];
 let currentFile = "data_json/1.json"; // default
+let brushEnabled = false; // Track brush state
 
 const svg = d3.select("#heatmap")
     .append("svg")
     .attr("width", svgWidth)
     .attr("height", svgHeight);
 
-const heatmapGroup = svg.append("g")
+const heatmapGroup = svg.append("g");
 
+// Add toggle button to HTML controls
+d3.select("#brushToggle").on("click", toggleBrush);
 
+// Initialize file selector
 const selector = d3.select("#fileSelector");
 selector.selectAll("option")
     .data(availableFiles)
@@ -71,6 +75,12 @@ d3.select("#frameSlider").on("input", function() {
     d3.select("#frameNumber").text(frameIndex);
 });
 
+function toggleBrush() {
+    brushEnabled = !brushEnabled;
+    d3.select("#brushToggle").text(brushEnabled ? "Disable Brush" : "Enable Brush");
+    drawFrame(d3.select("#frameSlider").property("value"));
+}
+
 function loadFrames(fileName) {
     d3.json(fileName).then(function(data) {
         frames = data;
@@ -86,12 +96,14 @@ function loadFrames(fileName) {
 
 function drawFrame(frameIndex) {
     const frame = frames[frameIndex];
-
     const flatData = frame.flat();
 
+    // Clear previous brush
+    svg.selectAll(".brush").remove();
+
+    // Update cells
     const cells = heatmapGroup.selectAll("rect")
-                    .attr('class', 'cells')
-                    .data(flatData);
+        .data(flatData);
 
     cells.join("rect")
         .attr("x", (d, i) => Math.floor(i / rows) * cellSize)
@@ -100,37 +112,40 @@ function drawFrame(frameIndex) {
         .attr("height", cellSize)
         .attr("fill", d => colorScale(d))
         .on("mouseover", function(event, d) {
-            console.log("Hovered pressure:", d);  // should appear in dev console
-            d3.select(this).attr("stroke", "black").attr("stroke-width", 1);
-            d3.select("#postureLabel").text(`Pressure: ${d.toFixed(1)} | Posture: ${currentPosture}`);
+            if (!brushEnabled) {
+                d3.select(this).attr("stroke", "black").attr("stroke-width", 1);
+                const posture = postureMap[currentFile.split("/").pop()] || "Unknown";
+                d3.select("#postureLabel").text(`Pressure: ${d.toFixed(1)} | Posture: ${posture}`);
+            }
         })
         .on("mouseout", function() {
-            d3.select(this).attr("stroke", null);
-            d3.select("#postureLabel").text("Posture: Supine (Demo)");
+            if (!brushEnabled) {
+                d3.select(this).attr("stroke", null);
+                const posture = postureMap[currentFile.split("/").pop()] || "Unknown";
+                d3.select("#postureLabel").text(`Posture: ${posture}`);
+            }
         });
-    
-    createBrushSelector(svg);
+
+    // Initialize brush if enabled
+    if (brushEnabled) {
+        const brush = d3.brush()
+            .extent([[0, 0], [svgWidth, svgHeight]])
+            .on("start brush end", brushed);
+
+        svg.append("g")
+            .attr("class", "brush")
+            .call(brush);
+    }
 }
 
-const zoom = d3.zoom()
-    .scaleExtent([1, 8])
-    .translateExtent([[0, 0], [cols * cellSize, rows * cellSize]])
-    .extent([[0, 0], [svgWidth, svgHeight]])
-    .on("zoom", (event) => {
-        heatmapGroup.attr("transform", event.transform);
-    });
+function brushed(event) {
+    if (!brushEnabled) return;
 
-function createBrushSelector(svg) {
-  svg.call(d3.brush().on('start brush end', brushed));
-  svg.selectAll('.cells, .overlay ~ *').raise();
-  // The zoom functionality
-  svg.call(zoom);
-  
-  // Function to handle brush events
-  function brushed(event) {
     const selection = event.selection;
     
     if (!selection) {
+        d3.select("#brushInfo").text("Cells Selected: 0 cells, Avg Pressure: 0.0");
+        heatmapGroup.selectAll("rect").attr("stroke", null);
         return;
     }
     
@@ -147,28 +162,16 @@ function createBrushSelector(svg) {
             const isBrushed = x >= x0 && x <= x1 && y >= y0 && y <= y1;
 
             if (isBrushed) {
-                rect
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 0.3);
+                rect.attr("stroke", "blue").attr("stroke-width", 0.5);
                 brushedCount += 1;
                 totalPressure += +d;
             } else {
-                rect
-                    .attr("stroke", null)
-                    .attr("stroke-width", null);
+                rect.attr("stroke", null);
             }
         });
 
     const avgPressure = brushedCount > 0 ? (totalPressure / brushedCount).toFixed(2) : 0;
-
-    // Show on the website
-    d3.select("#brushInfo")
-        .text(`Cells Selected: ${brushedCount} cells, Avg Pressure: ${avgPressure}`);
-
-    // console.log(`Brushed cells: ${brushedCount}, Avg Pressure: ${avgPressure}`);
-
-    //brushGroup.call(brush.move, null);
-}
+    d3.select("#brushInfo").text(`Cells Selected: ${brushedCount} cells, Avg Pressure: ${avgPressure}`);
 }
 
 function drawFixedLegend() {
